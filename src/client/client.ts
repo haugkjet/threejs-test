@@ -24,7 +24,7 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 2;
 
 new EXRLoader().load(
-  "textures/forst.exr",
+  "textures/forest.exr",
   function (texture: any, textureData: any) {
     // memorial.exr is NPOT
 
@@ -36,16 +36,20 @@ new EXRLoader().load(
     //texture.minFilter = LinearFilter;
     //texture.magFilter = LinearFilter;
 
-    const material = new THREE.MeshBasicMaterial({ map: texture });
+    /*const material = new THREE.MeshBasicMaterial({ map: texture });
 
     const quad = new THREE.PlaneGeometry(
       (1.5 * textureData.width) / textureData.height,
       1.5
     );
 
-    const mesh = new THREE.Mesh(quad, material);
+    const mesh = new THREE.Mesh(quad, material);*/
+    texture.mapping = THREE.EquirectangularReflectionMapping;
 
-    scene.add(mesh);
+    scene.background = texture;
+    scene.environment = texture;
+
+    //scene.add(mesh);
 
     render();
   }
