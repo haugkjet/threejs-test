@@ -23,6 +23,21 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 2;
 
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshStandardMaterial({
+  color: 0x0016ee,
+
+  transparent: false,
+  opacity: 0.8,
+
+  wireframe: false,
+  metalness: 0.1,
+  roughness: 0.4,
+});
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+cube.position.x = -2;
+
 new EXRLoader().load(
   "textures/forest.exr",
   function (texture: any, textureData: any) {
@@ -46,8 +61,8 @@ new EXRLoader().load(
     const mesh = new THREE.Mesh(quad, material);*/
     texture.mapping = THREE.EquirectangularReflectionMapping;
 
-    scene.background = texture;
-    scene.environment = texture;
+    //    scene.background = texture;
+    scene.environment = texture; // This do the lighting
 
     //scene.add(mesh);
 
