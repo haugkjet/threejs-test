@@ -2,6 +2,11 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import Stats from "three/examples/jsm/libs/stats.module";
+import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
+
+const params = {
+  exposure: 2.0,
+};
 
 const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(5));
@@ -18,10 +23,45 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 2;
 
-const renderer = new THREE.WebGLRenderer();
+new EXRLoader().load(
+  "textures/forst.exr",
+  function (texture: any, textureData: any) {
+    // memorial.exr is NPOT
+
+    //console.log( textureData );
+    //console.log( texture );
+
+    // EXRLoader sets these default settings
+    //texture.generateMipmaps = false;
+    //texture.minFilter = LinearFilter;
+    //texture.magFilter = LinearFilter;
+
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+
+    const quad = new THREE.PlaneGeometry(
+      (1.5 * textureData.width) / textureData.height,
+      1.5
+    );
+
+    const mesh = new THREE.Mesh(quad, material);
+
+    scene.add(mesh);
+
+    render();
+  }
+);
+
+//
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 // renderer.physicallyCorrectLights = true
 // renderer.shadowMap.enabled = true
 // renderer.outputEncoding = THREE.sRGBEncoding
+
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = params.exposure;
+
+renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
