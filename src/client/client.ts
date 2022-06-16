@@ -5,15 +5,18 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 
 const params = {
-  exposure: 2.0,
+  exposure: 1.5,
 };
 
 const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(5));
 
-const light = new THREE.SpotLight();
+//Light theme
+scene.background = new THREE.Color(0xa9a9a9);
+
+/*const light = new THREE.SpotLight();
 light.position.set(5, 5, 5);
-scene.add(light);
+scene.add(light);*/
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -23,7 +26,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 2;
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
+/*const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshStandardMaterial({
   color: 0x0016ee,
 
@@ -36,7 +39,7 @@ const material = new THREE.MeshStandardMaterial({
 });
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
-cube.position.x = -2;
+cube.position.x = -2;*/
 
 new EXRLoader().load(
   "textures/forest.exr",
