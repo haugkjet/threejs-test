@@ -12,16 +12,24 @@ const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(5));
 
 //Light theme
-scene.background = new THREE.Color(0xdadada);
+scene.background = new THREE.Color(0xb5e2ff);
 
-const light = new THREE.PointLight(0xffffff, 1, 100);
+const light = new THREE.DirectionalLight(0xffffff, 1.0);
 light.position.set(12, 12, 7);
 light.castShadow = true; // default false
+light.shadow.normalBias = 1e-2;
+light.shadow.bias = -1e-3;
+
+light.shadow.mapSize.width = 1024;
+light.shadow.mapSize.height = 1024;
+light.shadow.camera.near = 0.5;
+light.shadow.camera.far = 100;
+
 scene.add(light);
 
-/*const light = new THREE.SpotLight();
+/*const light2 = new THREE.SpotLight();
 light.position.set(5, 5, 5);
-scene.add(light);*/
+scene.add(light2);*/
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -29,6 +37,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
+
 camera.position.z = 4;
 camera.position.y = 1.5;
 
@@ -57,7 +66,7 @@ new EXRLoader().load(
 
     // EXRLoader sets these default settings
     //texture.generateMipmaps = false;
-    //texture.minFilter = LinearFilter;
+    //texture.minFilter = Lihttps://www.google.com/search?q=git+add&oq=git+add&aqs=chrome..69i57j0i512l6j69i60.1217j0j7&client=ubuntu&sourceid=chrome&ie=UTF-8nearFilter;
     //texture.magFilter = LinearFilter;
 
     /*const material = new THREE.MeshBasicMaterial({ map: texture });
@@ -86,8 +95,8 @@ renderer.physicallyCorrectLights = true;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-//renderer.toneMapping = THREE.ReinhardToneMapping;
-//renderer.toneMappingExposure = params.exposure;
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = params.exposure;
 
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -99,7 +108,7 @@ controls.enableDamping = true;
 /*const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshStandardMaterial({
   color: 0x00ff00,
-  wireframe: true,
+  wireframe: false,
 });
 
 const cube = new THREE.Mesh(geometry, material);
@@ -108,7 +117,11 @@ scene.add(cube);
 cube.position.y = 1;*/
 
 let redMonkey = new THREE.Mesh();
+let Object = new THREE.Mesh();
 let purplecube = new THREE.Mesh();
+let bluecube = new THREE.Mesh();
+let redcube = new THREE.Mesh();
+let mymaterial = new THREE.MeshStandardMaterial();
 
 const loader = new GLTFLoader();
 loader.load(
@@ -117,20 +130,24 @@ loader.load(
     gltf.scene.traverse(function (child) {
       if ((child as THREE.Mesh).isMesh) {
         const m = child as THREE.Mesh;
-        //m.receiveShadow = true;
+        if (m.name === "Plane") m.receiveShadow = true;
         m.castShadow = true;
+        //m.material.;
         if (m.name === "Suzanne") redMonkey = m;
+        if (m.name === "Object") Object = m;
         if (m.name === "PurpleCube") purplecube = m;
-        //console.log(m.name);
+        if (m.name === "Redcube") redcube = m;
+        if (m.name === "BlueCube") bluecube = m;
+        console.log(m.name);
         //console.log(m.id);
       }
-      if ((child as THREE.Light).isLight) {
+      /* if ((child as THREE.Light).isLight) {
         const l = child as THREE.Light;
         l.castShadow = true;
-        l.shadow.bias = -0.003;
-        l.shadow.mapSize.width = 2048;
-        l.shadow.mapSize.height = 2048;
-      }
+        l.shadow.bias = -0.0001;
+        l.shadow.mapSize.width = 512;
+        l.shadow.mapSize.height = 512;
+      }*/
     });
     scene.add(gltf.scene);
   },
@@ -159,11 +176,11 @@ function animate() {
   //cube.rotation.x += 0.001;
   //cube.rotation.y += 0.005;
 
-  redMonkey.rotation.y += 0.005;
+  redMonkey.rotation.y += 0.002;
+  Object.rotation.y -= 0.005;
   purplecube.rotation.y -= 0.005;
-
-  //if (scene.getObjectByName("PurpleCube")?.rotation.y)
-  //scene.getObjectByName("PurpleCube")?.rotation.y += 0.005;
+  redcube.rotation.y -= 0.005;
+  bluecube.rotation.y += 0.005;
 
   controls.update();
 
