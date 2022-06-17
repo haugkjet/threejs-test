@@ -5,14 +5,14 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 
 const params = {
-  exposure: 1.5,
+  exposure: 1.0,
 };
 
 const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(5));
 
 //Light theme
-scene.background = new THREE.Color(0xa9a9a9);
+scene.background = new THREE.Color(0xdadada);
 
 const light = new THREE.PointLight(0xffffff, 1, 100);
 light.position.set(12, 12, 7);
@@ -81,12 +81,12 @@ new EXRLoader().load(
 //
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-//renderer.physicallyCorrectLights = true;
+renderer.physicallyCorrectLights = true;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-renderer.toneMapping = THREE.ReinhardToneMapping;
-renderer.toneMappingExposure = params.exposure;
+//renderer.toneMapping = THREE.ReinhardToneMapping;
+//renderer.toneMappingExposure = params.exposure;
 
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -99,7 +99,7 @@ const loader = new GLTFLoader();
 loader.load(
   "models/monkey.glb",
   function (gltf) {
-    gltf.scene.traverse(function (child) {
+    /* gltf.scene.traverse(function (child) {
       if ((child as THREE.Mesh).isMesh) {
         const m = child as THREE.Mesh;
         //m.receiveShadow = true;
@@ -112,7 +112,7 @@ loader.load(
         l.shadow.mapSize.width = 2048;
         l.shadow.mapSize.height = 2048;
       }
-    });
+    });*/
     scene.add(gltf.scene);
   },
   (xhr) => {
