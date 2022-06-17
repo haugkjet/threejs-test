@@ -29,7 +29,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.z = 2;
+camera.position.z = 4;
+camera.position.y = 1.5;
 
 /*const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshStandardMaterial({
@@ -95,15 +96,33 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
+/*const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshStandardMaterial({
+  color: 0x00ff00,
+  wireframe: true,
+});
+
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+cube.position.y = 1;*/
+
+let redMonkey = new THREE.Mesh();
+let purplecube = new THREE.Mesh();
+
 const loader = new GLTFLoader();
 loader.load(
   "models/monkey.glb",
   function (gltf) {
-    /* gltf.scene.traverse(function (child) {
+    gltf.scene.traverse(function (child) {
       if ((child as THREE.Mesh).isMesh) {
         const m = child as THREE.Mesh;
         //m.receiveShadow = true;
         m.castShadow = true;
+        if (m.name === "Suzanne") redMonkey = m;
+        if (m.name === "PurpleCube") purplecube = m;
+        //console.log(m.name);
+        //console.log(m.id);
       }
       if ((child as THREE.Light).isLight) {
         const l = child as THREE.Light;
@@ -112,7 +131,7 @@ loader.load(
         l.shadow.mapSize.width = 2048;
         l.shadow.mapSize.height = 2048;
       }
-    });*/
+    });
     scene.add(gltf.scene);
   },
   (xhr) => {
@@ -136,6 +155,15 @@ document.body.appendChild(stats.dom);
 
 function animate() {
   requestAnimationFrame(animate);
+
+  //cube.rotation.x += 0.001;
+  //cube.rotation.y += 0.005;
+
+  redMonkey.rotation.y += 0.005;
+  purplecube.rotation.y -= 0.005;
+
+  //if (scene.getObjectByName("PurpleCube")?.rotation.y)
+  //scene.getObjectByName("PurpleCube")?.rotation.y += 0.005;
 
   controls.update();
 
