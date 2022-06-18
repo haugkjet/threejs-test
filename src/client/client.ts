@@ -3,6 +3,18 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import Stats from "three/examples/jsm/libs/stats.module";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
+import { mapLinear } from "three/src/math/MathUtils";
+
+const _VS = `
+void main() {
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+const _FS = `
+void main() { 
+  gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+}
+`;
 
 const params = {
   exposure: 1.0,
@@ -38,8 +50,8 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-camera.position.z = 2;
-camera.position.y = 1.5;
+camera.position.z = 4;
+camera.position.y = 4.5;
 
 /*const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshStandardMaterial({
@@ -181,6 +193,27 @@ const arrowHelper = new THREE.ArrowHelper(
   0xffff00
 );
 scene.add(arrowHelper);
+
+const s1 = new THREE.Mesh(
+  new THREE.SphereGeometry(1, 32, 32),
+  new THREE.MeshStandardMaterial({ color: 0xffffff })
+);
+s1.position.set(1, 2, -0.5);
+s1.castShadow = true;
+scene.add(s1);
+
+const s2 = new THREE.Mesh(
+  new THREE.SphereGeometry(1, 32, 32),
+  //new THREE.MeshStandardMaterial({ color: 0xffffff })
+  new THREE.ShaderMaterial({
+    uniforms: {},
+    vertexShader: _VS,
+    fragmentShader: _FS,
+  })
+);
+s2.position.set(-1, 2, -0.5);
+s2.castShadow = true;
+scene.add(s2);
 
 /*const material = new THREE.MeshNormalMaterial()
  const boxGeometry = new THREE.BoxGeometry(.2, .2, .2)
