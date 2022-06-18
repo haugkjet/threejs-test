@@ -38,7 +38,7 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-camera.position.z = 4;
+camera.position.z = 2;
 camera.position.y = 1.5;
 
 /*const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -117,7 +117,8 @@ scene.add(cube);
 cube.position.y = 1;*/
 
 let redMonkey = new THREE.Mesh();
-let Object = new THREE.Mesh();
+let blueMonkey = new THREE.Mesh();
+let purpleMonkey = new THREE.Mesh();
 let purplecube = new THREE.Mesh();
 let bluecube = new THREE.Mesh();
 let redcube = new THREE.Mesh();
@@ -133,12 +134,14 @@ loader.load(
         if (m.name === "Plane") m.receiveShadow = true;
         m.castShadow = true;
         //m.material.;
-        if (m.name === "Suzanne") redMonkey = m;
-        if (m.name === "Object") Object = m;
+        if (m.name === "RedMonkey") redMonkey = m;
+        if (m.name === "BlueMonkey") blueMonkey = m;
+        if (m.name === "PurpleMonkey") purpleMonkey = m;
         if (m.name === "PurpleCube") purplecube = m;
         if (m.name === "Redcube") redcube = m;
         if (m.name === "BlueCube") bluecube = m;
         console.log(m.name);
+        sceneMeshes.push(m);
         //console.log(m.id);
       }
       /* if ((child as THREE.Light).isLight) {
@@ -159,6 +162,95 @@ loader.load(
   }
 );
 
+const material3 = new THREE.MeshNormalMaterial();
+
+const boxGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+const coneGeometry = new THREE.ConeGeometry(0.05, 0.2, 8);
+
+const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+const points = new Array();
+points.push(new THREE.Vector3(0, 0, 0));
+points.push(new THREE.Vector3(0, 0, 0.25));
+const geometry = new THREE.BufferGeometry().setFromPoints(points);
+const line = new THREE.Line(geometry, material3);
+scene.add(line);
+const arrowHelper = new THREE.ArrowHelper(
+  new THREE.Vector3(),
+  new THREE.Vector3(),
+  0.25,
+  0xffff00
+);
+scene.add(arrowHelper);
+
+/*const material = new THREE.MeshNormalMaterial()
+ const boxGeometry = new THREE.BoxGeometry(.2, .2, .2)
+ const coneGeometry = new THREE.ConeGeometry(.05, .2, 8)*/
+
+const raycaster = new THREE.Raycaster();
+const sceneMeshes: THREE.Object3D[] = [];
+
+renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
+renderer.domElement.addEventListener("mousemove", onMouseMove, false);
+
+function onMouseMove(event: MouseEvent) {
+  const mouse = {
+    x: (event.clientX / renderer.domElement.clientWidth) * 2 - 1,
+    y: -(event.clientY / renderer.domElement.clientHeight) * 2 + 1,
+  };
+
+  // console.log(mouse)
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(sceneMeshes, false);
+
+  if (intersects.length > 0) {
+    // console.log(sceneMeshes.length + " " + intersects.length)
+    // console.log(intersects[0])
+    console.log(
+      intersects[0].object.userData.name + " " + intersects[0].distance + " "
+    );
+    // console.log((intersects[0].face as THREE.Face).normal)
+    // line.position.set(0, 0, 0)
+    // line.lookAt((intersects[0].face as THREE.Face).normal)
+    // line.position.copy(intersects[0].point)
+
+    const n = new THREE.Vector3();
+    n.copy((intersects[0].face as THREE.Face).normal);
+    n.transformDirection(intersects[0].object.matrixWorld);
+
+    arrowHelper.setDirection(n);
+    arrowHelper.position.copy(intersects[0].point);
+  }
+}
+
+function onDoubleClick(event: MouseEvent) {
+  const mouse = {
+    x: (event.clientX / renderer.domElement.clientWidth) * 2 - 1,
+    y: -(event.clientY / renderer.domElement.clientHeight) * 2 + 1,
+  };
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(sceneMeshes, false);
+
+  if (intersects.length > 0) {
+    const n = new THREE.Vector3();
+    n.copy((intersects[0].face as THREE.Face).normal);
+    n.transformDirection(intersects[0].object.matrixWorld);
+
+    // const cube = new THREE.Mesh(boxGeometry, material)
+    const cube = new THREE.Mesh(coneGeometry, material);
+
+    cube.lookAt(n);
+    cube.rotateX(Math.PI / 2);
+    cube.position.copy(intersects[0].point);
+    cube.position.addScaledVector(n, 0.1);
+
+    scene.add(cube);
+    sceneMeshes.push(cube);
+  }
+}
+
 window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -177,7 +269,8 @@ function animate() {
   //cube.rotation.y += 0.005;
 
   redMonkey.rotation.y += 0.002;
-  Object.rotation.y -= 0.005;
+  blueMonkey.rotation.y -= 0.005;
+  purpleMonkey.rotation.y -= 0.005;
   purplecube.rotation.y -= 0.005;
   redcube.rotation.y -= 0.005;
   bluecube.rotation.y += 0.005;
