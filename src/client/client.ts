@@ -137,6 +137,7 @@ loader.load(
         const m = child as THREE.Mesh;
         if (m.name === "Plane") m.receiveShadow = true;
         m.castShadow = true;
+
         //m.material.;
         if (m.name === "RedMonkey") redMonkey = m;
         if (m.name === "BlueMonkey") blueMonkey = m;
@@ -245,6 +246,26 @@ const s3 = new THREE.Mesh(
 s3.position.set(3, 2, -0.5);
 s3.castShadow = true;
 scene.add(s3);
+
+let sphereGeometry = new THREE.SphereGeometry(0.5, 20, 20);
+let sphere = new THREE.Mesh(
+  sphereGeometry,
+  new THREE.MeshStandardMaterial({ roughness: 0.242, color: 0x6b302c })
+);
+sphere.position.set(-3, 2, 0);
+scene.add(sphere);
+
+let outlineMaterial1 = new THREE.MeshStandardMaterial({
+  color: 0x570861,
+  side: THREE.BackSide,
+});
+let outlineMesh1 = new THREE.Mesh(sphereGeometry, outlineMaterial1);
+//outlineMesh1.position = sphere.position;
+outlineMesh1.scale.multiplyScalar(1.04);
+scene.add(outlineMesh1);
+outlineMesh1.position.x = sphere.position.x;
+outlineMesh1.position.y = sphere.position.y;
+outlineMesh1.position.z = sphere.position.z;
 
 const raycaster = new THREE.Raycaster();
 const sceneMeshes: THREE.Object3D[] = [];
