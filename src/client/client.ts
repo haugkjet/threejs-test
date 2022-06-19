@@ -200,7 +200,7 @@ const s2 = new THREE.Mesh(
   new THREE.ShaderMaterial({
     uniforms: {
       sphereColor: {
-        value: new THREE.Vector3(0, 0, 1),
+        value: new THREE.Vector3(1, 1, 1),
       },
     },
     vertexShader: _VS,
@@ -214,6 +214,37 @@ scene.add(s2);
 /*const material = new THREE.MeshNormalMaterial()
  const boxGeometry = new THREE.BoxGeometry(.2, .2, .2)
  const coneGeometry = new THREE.ConeGeometry(.05, .2, 8)*/
+
+var outline_shader = {
+  uniforms: {
+    linewidth: { type: "f", value: 0.02 },
+  },
+  vertex_shader: [
+    "uniform float linewidth;",
+    "void main() {",
+    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+    "vec4 displacement = vec4( normalize( normalMatrix * normal ) * linewidth, 0.0 ) + mvPosition;",
+    "gl_Position = projectionMatrix * displacement;",
+    "}",
+  ].join("\n"),
+  fragment_shader: [
+    "void main() {",
+    "gl_FragColor = vec4( 0.0, 0.0, 0.0, 1.0 );",
+    "}",
+  ].join("\n"),
+};
+
+const s3 = new THREE.Mesh(
+  new THREE.BoxGeometry(0.5, 0.5, 2),
+  new THREE.ShaderMaterial({
+    uniforms: THREE.UniformsUtils.clone(outline_shader.uniforms),
+    vertexShader: outline_shader.vertex_shader,
+    fragmentShader: outline_shader.fragment_shader,
+  })
+);
+s3.position.set(3, 2, -0.5);
+s3.castShadow = true;
+scene.add(s3);
 
 const raycaster = new THREE.Raycaster();
 const sceneMeshes: THREE.Object3D[] = [];
