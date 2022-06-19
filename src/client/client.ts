@@ -6,13 +6,21 @@ import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 import { mapLinear } from "three/src/math/MathUtils";
 
 const _VS = `
+
+varying vec3 v_Normal;
 void main() {
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  vec3 scale = vec3(0.5, 0.5, 0.5);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position * scale, 1.0);
+  v_Normal = normal;
 }
 `;
 const _FS = `
+uniform vec3 sphereColor;
+
+varying vec3 v_Normal;
 void main() { 
-  gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+  //gl_FragColor = vec4(v_Normal,1.0);
+  gl_FragColor = vec4(sphereColor* v_Normal, 1.0);
 }
 `;
 
@@ -206,7 +214,11 @@ const s2 = new THREE.Mesh(
   new THREE.SphereGeometry(1, 32, 32),
   //new THREE.MeshStandardMaterial({ color: 0xffffff })
   new THREE.ShaderMaterial({
-    uniforms: {},
+    uniforms: {
+      sphereColor: {
+        value: new THREE.Vector3(0, 0, 1),
+      },
+    },
     vertexShader: _VS,
     fragmentShader: _FS,
   })
