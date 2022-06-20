@@ -11,6 +11,8 @@ import { _FS } from "./shaders/normal/fragment";
 import { VS_outline } from "./shaders/outline/vertex";
 import { FS_outline } from "./shaders/outline/fragment";
 
+import { gltfload } from "./gltfload";
+
 const params = {
   exposure: 1.0,
 };
@@ -32,11 +34,8 @@ light.shadow.mapSize.height = 1024;
 light.shadow.camera.near = 0.5;
 light.shadow.camera.far = 100;
 
+// Camera
 scene.add(light);
-
-/*const light2 = new THREE.SpotLight();
-light.position.set(5, 5, 5);
-scene.add(light2);*/
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -48,21 +47,7 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 4;
 camera.position.y = 4.5;
 
-/*const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({
-  color: 0x0016ee,
-
-  transparent: false,
-  opacity: 0.8,
-
-  wireframe: false,
-  metalness: 0.1,
-  roughness: 0.4,
-});
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-cube.position.x = -2;*/
-
+// Load hdr
 new EXRLoader().load(
   "textures/forest.exr",
   function (texture: any, textureData: any) {
@@ -86,17 +71,14 @@ new EXRLoader().load(
     const mesh = new THREE.Mesh(quad, material);*/
     texture.mapping = THREE.EquirectangularReflectionMapping;
 
-    //    scene.background = texture;
+    //scene.background = texture; // Use hdr as background
     scene.environment = texture; // This do the lighting
-
-    //scene.add(mesh);
 
     render();
   }
 );
 
-//
-
+// Setup renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.physicallyCorrectLights = true;
 renderer.shadowMap.enabled = true;
@@ -109,72 +91,18 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Orbitcontrols
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-/*const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshStandardMaterial({
-  color: 0x00ff00,
-  wireframe: false,
-});
-
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-
-cube.position.y = 1;*/
-
-let redMonkey = new THREE.Mesh();
-let blueMonkey = new THREE.Mesh();
-let purpleMonkey = new THREE.Mesh();
-let purplecube = new THREE.Mesh();
-let bluecube = new THREE.Mesh();
-let redcube = new THREE.Mesh();
-let mymaterial = new THREE.MeshStandardMaterial();
-
-const loader = new GLTFLoader();
-loader.load(
-  "models/monkey.glb",
-  function (gltf) {
-    gltf.scene.traverse(function (child) {
-      if ((child as THREE.Mesh).isMesh) {
-        const m = child as THREE.Mesh;
-        if (m.name === "Plane") m.receiveShadow = true;
-        m.castShadow = true;
-
-        //m.material.;
-        if (m.name === "RedMonkey") redMonkey = m;
-        if (m.name === "BlueMonkey") blueMonkey = m;
-        if (m.name === "PurpleMonkey") purpleMonkey = m;
-        if (m.name === "PurpleCube") purplecube = m;
-        if (m.name === "Redcube") redcube = m;
-        if (m.name === "BlueCube") bluecube = m;
-        console.log(m.name);
-        sceneMeshes.push(m);
-        //console.log(m.id);
-      }
-      /* if ((child as THREE.Light).isLight) {
-        const l = child as THREE.Light;
-        l.castShadow = true;
-        l.shadow.bias = -0.0001;
-        l.shadow.mapSize.width = 512;
-        l.shadow.mapSize.height = 512;
-      }*/
-    });
-    scene.add(gltf.scene);
-  },
-  (xhr) => {
-    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-  },
-  (error) => {
-    console.log(error);
-  }
-);
+// Load gltf
+const sceneMeshes: THREE.Object3D[] = [];
+gltfload(scene, sceneMeshes);
 
 const material3 = new THREE.MeshNormalMaterial();
 
-const boxGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+// Helper arrow for raycaster
 const coneGeometry = new THREE.ConeGeometry(0.05, 0.2, 8);
-
 const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
 const points = new Array();
 points.push(new THREE.Vector3(0, 0, 0));
@@ -238,7 +166,6 @@ let sphere = new THREE.Mesh(
 );
 sphere.position.set(-3, 2, 0);
 scene.add(sphere);
-
 let outlineMaterial1 = new THREE.MeshStandardMaterial({
   color: 0x570861,
   side: THREE.BackSide,
@@ -253,7 +180,6 @@ outlineMesh1.position.z = sphere.position.z;
 
 // Raycaster code
 const raycaster = new THREE.Raycaster();
-const sceneMeshes: THREE.Object3D[] = [];
 
 renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
 renderer.domElement.addEventListener("mousemove", onMouseMove, false);
@@ -334,12 +260,12 @@ function animate() {
   //cube.rotation.x += 0.001;
   //cube.rotation.y += 0.005;
 
-  redMonkey.rotation.y += 0.002;
+  /*redMonkey.rotation.y += 0.002;
   blueMonkey.rotation.y -= 0.005;
   purpleMonkey.rotation.y -= 0.005;
   purplecube.rotation.y -= 0.005;
   redcube.rotation.y -= 0.005;
-  bluecube.rotation.y += 0.005;
+  bluecube.rotation.y += 0.005;*/
 
   controls.update();
 
