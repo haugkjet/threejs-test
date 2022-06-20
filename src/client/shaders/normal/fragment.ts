@@ -11,10 +11,11 @@ vec3 hashOld33( vec3 p )
 
 uniform vec3 sphereColor;
 varying vec3 v_Normal;
+uniform float uTime;
 uniform vec2 u_resolution;
 void main() { 
-  //gl_FragColor = vec4(v_Normal,1.0);
-  gl_FragColor = vec4(hashOld33 (sphereColor* v_Normal), 1.0);
+  gl_FragColor = vec4(v_Normal*sin(uTime),1.0);
+  //gl_FragColor = vec4(hashOld33 (sphereColor* v_Normal * uTime), 1.0);
 
 }
 `;

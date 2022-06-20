@@ -1,5 +1,5 @@
 const _VS = /* glsl */ `
-
+uniform float uTime;
 
 vec3 hashOld33( vec3 p )
 {
@@ -11,8 +11,9 @@ vec3 hashOld33( vec3 p )
 }
 
 varying vec3 v_Normal;
+
 void main() {
-  vec3 scale = vec3 (0.5,0.5,0.5); // hashOld33(position);
+  vec3 scale = vec3 (sin(uTime),sin(uTime),sin(uTime));// hashOld33(position);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position * scale, 1.0);
   v_Normal = normal;
   

@@ -12,6 +12,7 @@ import { VS_outline } from "./shaders/outline/vertex";
 import { FS_outline } from "./shaders/outline/fragment";
 
 import { gltfload } from "./gltfload";
+import { ShaderMaterial } from "three";
 
 const params = {
   exposure: 1.0,
@@ -127,19 +128,22 @@ s1.position.set(1, 2, -0.5);
 s1.castShadow = true;
 scene.add(s1);
 
+const myshadermaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    sphereColor: {
+      value: new THREE.Vector3(1, 1, 1),
+    },
+    uTime: { value: 0 },
+  },
+  vertexShader: _VS,
+  fragmentShader: _FS,
+});
+
 // Ball with normal shader
 const s2 = new THREE.Mesh(
   new THREE.SphereGeometry(1, 32, 32),
   //new THREE.MeshStandardMaterial({ color: 0xffffff })
-  new THREE.ShaderMaterial({
-    uniforms: {
-      sphereColor: {
-        value: new THREE.Vector3(1, 1, 1),
-      },
-    },
-    vertexShader: _VS,
-    fragmentShader: _FS,
-  })
+  myshadermaterial
 );
 s2.position.set(-1, 2, -0.5);
 s2.castShadow = true;
@@ -251,11 +255,15 @@ function onWindowResize() {
   render();
 }
 
+var clock = new THREE.Clock();
 const stats = Stats();
 document.body.appendChild(stats.dom);
 
 function animate() {
   requestAnimationFrame(animate);
+
+  const elapsedTime = clock.getElapsedTime();
+  myshadermaterial.uniforms.uTime.value = elapsedTime;
 
   //cube.rotation.x += 0.001;
   //cube.rotation.y += 0.005;
