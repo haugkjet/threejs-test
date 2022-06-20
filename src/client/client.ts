@@ -5,8 +5,11 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 import { mapLinear } from "three/src/math/MathUtils";
 
-import { _VS } from "./shaders/vertex";
-import { _FS } from "./shaders/fragment";
+import { _VS } from "./shaders/normal/vertex";
+import { _FS } from "./shaders/normal/fragment";
+
+import { VS_outline } from "./shaders/outline/vertex";
+import { FS_outline } from "./shaders/outline/fragment";
 
 const params = {
   exposure: 1.0,
@@ -187,6 +190,7 @@ const arrowHelper = new THREE.ArrowHelper(
 );
 scene.add(arrowHelper);
 
+// White ball
 const s1 = new THREE.Mesh(
   new THREE.SphereGeometry(1, 32, 32),
   new THREE.MeshStandardMaterial({ color: 0xffffff })
@@ -195,6 +199,7 @@ s1.position.set(1, 2, -0.5);
 s1.castShadow = true;
 scene.add(s1);
 
+// Ball with normal shader
 const s2 = new THREE.Mesh(
   new THREE.SphereGeometry(1, 32, 32),
   //new THREE.MeshStandardMaterial({ color: 0xffffff })
@@ -212,41 +217,20 @@ s2.position.set(-1, 2, -0.5);
 s2.castShadow = true;
 scene.add(s2);
 
-/*const material = new THREE.MeshNormalMaterial()
- const boxGeometry = new THREE.BoxGeometry(.2, .2, .2)
- const coneGeometry = new THREE.ConeGeometry(.05, .2, 8)*/
-
-var outline_shader = {
-  uniforms: {
-    linewidth: { type: "f", value: 0.02 },
-  },
-  vertex_shader: [
-    "uniform float linewidth;",
-    "void main() {",
-    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
-    "vec4 displacement = vec4( normalize( normalMatrix * normal ) * linewidth, 0.0 ) + mvPosition;",
-    "gl_Position = projectionMatrix * displacement;",
-    "}",
-  ].join("\n"),
-  fragment_shader: [
-    "void main() {",
-    "gl_FragColor = vec4( 0.0, 0.0, 0.0, 1.0 );",
-    "}",
-  ].join("\n"),
-};
-
+// Box with (unfinished) outline shader
 const s3 = new THREE.Mesh(
   new THREE.BoxGeometry(0.5, 0.5, 2),
   new THREE.ShaderMaterial({
-    uniforms: THREE.UniformsUtils.clone(outline_shader.uniforms),
-    vertexShader: outline_shader.vertex_shader,
-    fragmentShader: outline_shader.fragment_shader,
+    uniforms: { linewidth: { value: 0.05 } }, // linewidth: { type: "f", value: 0.02 },
+    vertexShader: VS_outline,
+    fragmentShader: FS_outline,
   })
 );
 s3.position.set(3, 2, -0.5);
 s3.castShadow = true;
 scene.add(s3);
 
+// Sphere with outline effect (not shader based)
 let sphereGeometry = new THREE.SphereGeometry(0.5, 20, 20);
 let sphere = new THREE.Mesh(
   sphereGeometry,
@@ -267,6 +251,7 @@ outlineMesh1.position.x = sphere.position.x;
 outlineMesh1.position.y = sphere.position.y;
 outlineMesh1.position.z = sphere.position.z;
 
+// Raycaster code
 const raycaster = new THREE.Raycaster();
 const sceneMeshes: THREE.Object3D[] = [];
 
