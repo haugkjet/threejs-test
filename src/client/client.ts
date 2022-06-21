@@ -96,9 +96,67 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
+const pickableObjects: THREE.Mesh[] = [];
+let intersectedObject: THREE.Object3D | null;
+const originalMaterials: { [id: string]: THREE.Material | THREE.Material[] } =
+  {};
+const highlightedMaterial = new THREE.MeshBasicMaterial({
+  wireframe: true,
+  color: 0x00ff00,
+});
+
 // Load gltf
 const sceneMeshes: THREE.Object3D[] = [];
-gltfload(scene, sceneMeshes);
+
+let redMonkey = new THREE.Mesh();
+let blueMonkey = new THREE.Mesh();
+let purpleMonkey = new THREE.Mesh();
+let purplecube = new THREE.Mesh();
+let bluecube = new THREE.Mesh();
+let redcube = new THREE.Mesh();
+let mymaterial = new THREE.MeshStandardMaterial();
+
+const loader = new GLTFLoader();
+loader.load(
+  "models/monkey.glb",
+  function (gltf) {
+    gltf.scene.traverse(function (child) {
+      if ((child as THREE.Mesh).isMesh) {
+        const m = child as THREE.Mesh;
+        switch (m.name) {
+          case "Plane":
+            m.receiveShadow = true;
+            break;
+          case "Sphere":
+            m.castShadow = true;
+            break;
+          default:
+            m.castShadow = true;
+            pickableObjects.push(m);
+            sceneMeshes.push(m);
+            //store reference to original materials for later
+            originalMaterials[m.name] = (m as THREE.Mesh).material;
+        }
+
+        //console.log(m.id);
+      }
+      /* if ((child as THREE.Light).isLight) {
+          const l = child as THREE.Light;
+          l.castShadow = true;
+          l.shadow.bias = -0.0001;
+          l.shadow.mapSize.width = 512;
+          l.shadow.mapSize.height = 512;
+        }*/
+    });
+    scene.add(gltf.scene);
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  (error) => {
+    console.log(error);
+  }
+);
 
 const material3 = new THREE.MeshNormalMaterial();
 
@@ -184,9 +242,12 @@ outlineMesh1.position.z = sphere.position.z;
 
 // Raycaster code
 const raycaster = new THREE.Raycaster();
+let intersects: THREE.Intersection[];
 
-renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
+//renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
+renderer.domElement.addEventListener("click", onClick, false);
 renderer.domElement.addEventListener("mousemove", onMouseMove, false);
+renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
 
 function onMouseMove(event: MouseEvent) {
   const mouse = {
@@ -218,6 +279,31 @@ function onMouseMove(event: MouseEvent) {
     arrowHelper.setDirection(n);
     arrowHelper.position.copy(intersects[0].point);
   }
+}
+
+//document.addEventListener("mousemove", onDocumentMouseMove, false);
+function onClick(event: MouseEvent) {
+  raycaster.setFromCamera(
+    {
+      x: (event.clientX / renderer.domElement.clientWidth) * 2 - 1,
+      y: -(event.clientY / renderer.domElement.clientHeight) * 2 + 1,
+    },
+    camera
+  );
+  intersects = raycaster.intersectObjects(pickableObjects, false);
+
+  if (intersects.length > 0) {
+    intersectedObject = intersects[0].object;
+  } else {
+    intersectedObject = null;
+  }
+  pickableObjects.forEach((o: THREE.Mesh, i) => {
+    if (intersectedObject && intersectedObject.name === o.name) {
+      pickableObjects[i].material = myshadermaterial;
+    } else {
+      pickableObjects[i].material = originalMaterials[o.name];
+    }
+  });
 }
 
 function onDoubleClick(event: MouseEvent) {
@@ -264,16 +350,6 @@ function animate() {
 
   const elapsedTime = clock.getElapsedTime();
   myshadermaterial.uniforms.uTime.value = elapsedTime;
-
-  //cube.rotation.x += 0.001;
-  //cube.rotation.y += 0.005;
-
-  /*redMonkey.rotation.y += 0.002;
-  blueMonkey.rotation.y -= 0.005;
-  purpleMonkey.rotation.y -= 0.005;
-  purplecube.rotation.y -= 0.005;
-  redcube.rotation.y -= 0.005;
-  bluecube.rotation.y += 0.005;*/
 
   controls.update();
 
