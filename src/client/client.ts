@@ -5,6 +5,11 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 import { mapLinear } from "three/src/math/MathUtils";
 
+import {
+  CSS2DRenderer,
+  CSS2DObject,
+} from "three/examples/jsm/renderers/CSS2DRenderer";
+
 import { _VS } from "./shaders/normal/vertex";
 import { _FS } from "./shaders/normal/fragment";
 
@@ -92,6 +97,13 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = "absolute";
+labelRenderer.domElement.style.top = "0px";
+labelRenderer.domElement.style.pointerEvents = "none";
+document.body.appendChild(labelRenderer.domElement);
+
 // Orbitcontrols
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -136,6 +148,18 @@ loader.load(
             sceneMeshes.push(m);
             //store reference to original materials for later
             originalMaterials[m.name] = (m as THREE.Mesh).material;
+            const measurementDiv = document.createElement(
+              "div"
+            ) as HTMLDivElement;
+            measurementDiv.className = "measurementLabel";
+            measurementDiv.innerText = m.name;
+            const measurementLabel = new CSS2DObject(measurementDiv);
+            measurementLabel.position.x = m.position.x;
+            measurementLabel.position.y = m.position.y;
+            measurementLabel.position.z = m.position.z;
+            //measurementLabel.position.copy(intersects[0].point)
+            //measurementLabels[lineId] = measurementLabel
+            scene.add(measurementLabel);
         }
 
         //console.log(m.id);
@@ -338,6 +362,7 @@ function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  labelRenderer.setSize(window.innerWidth, window.innerHeight);
   render();
 }
 
@@ -359,6 +384,7 @@ function animate() {
 }
 
 function render() {
+  labelRenderer.render(scene, camera);
   renderer.render(scene, camera);
 }
 
