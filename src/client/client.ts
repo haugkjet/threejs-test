@@ -28,7 +28,7 @@ const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(5));
 
 //Light theme
-scene.background = new THREE.Color(0xb5e2ff);
+//scene.background = new THREE.Color(0xb5e2ff);
 
 const light = new THREE.DirectionalLight(0xffffff, 1.0);
 light.position.set(12, 12, 7);
@@ -48,11 +48,44 @@ const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  1000
+  100000
 );
 
 camera.position.z = 4;
 camera.position.y = 4.5;
+
+const SKY_COLOR = 0x0e0353;
+const GROUND_COLOR = 0xd5f3ed;
+const SKY_SIZE = 10000;
+
+const vertexShader = `
+      varying vec3 vWorldPosition;
+            void main() {
+                vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+                vWorldPosition = worldPosition.xyz;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            }`;
+const fragmentShader = `
+      uniform vec3 topColor;
+            uniform vec3 bottomColor;
+            varying vec3 vWorldPosition;
+            void main() {
+                float h = normalize( vWorldPosition).y;
+                gl_FragColor = vec4( mix( bottomColor, topColor, max( h, 0.0 ) ), 1.0 );
+            }`;
+const uniforms = {
+  topColor: { value: new THREE.Color(SKY_COLOR) },
+  bottomColor: { value: new THREE.Color(GROUND_COLOR) },
+};
+const skyGeo = new THREE.SphereGeometry(SKY_SIZE, 32, 15);
+const skyMat = new ShaderMaterial({
+  uniforms,
+  vertexShader,
+  fragmentShader,
+  side: THREE.BackSide,
+});
+const sky = new THREE.Mesh(skyGeo, skyMat);
+scene.add(sky);
 
 // Load hdr
 new EXRLoader().load(
