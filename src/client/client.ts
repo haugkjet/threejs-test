@@ -182,28 +182,30 @@ loader.load(
     gltf.scene.traverse(function (child) {
       if ((child as THREE.Mesh).isMesh) {
         const m = child as THREE.Mesh;
-        switch (m.name) {
-          case "Plane":
-            m.receiveShadow = true;
-            m.userData.ground = true;
-            break;
-          default:
-            m.castShadow = true;
-            m.userData.draggable = true;
+        const mname = m.name as string;
+        if (mname.includes("Plane")) {
+          m.receiveShadow = true;
+          m.userData.ground = true;
+        } else if (mname.includes("Cube")) {
+          m.receiveShadow = true;
+          m.userData.ground = true;
+        } else {
+          m.castShadow = true;
+          m.userData.draggable = true;
 
-            pickableObjects.push(m);
-            sceneMeshes.push(m);
-            //store reference to original materials for later
-            originalMaterials[m.name] = (m as THREE.Mesh).material;
-            const measurementDiv = document.createElement(
-              "div"
-            ) as HTMLDivElement;
-            measurementDiv.className = "measurementLabel";
-            measurementDiv.innerText = m.name;
-            const measurementLabel = new CSS2DObject(measurementDiv);
-            measurementLabel.position.x = m.position.x;
-            measurementLabel.position.y = m.position.y;
-            measurementLabel.position.z = m.position.z;
+          pickableObjects.push(m);
+          sceneMeshes.push(m);
+          //store reference to original materials for later
+          originalMaterials[m.name] = (m as THREE.Mesh).material;
+          const measurementDiv = document.createElement(
+            "div"
+          ) as HTMLDivElement;
+          measurementDiv.className = "measurementLabel";
+          measurementDiv.innerText = m.name;
+          const measurementLabel = new CSS2DObject(measurementDiv);
+          measurementLabel.position.x = m.position.x;
+          measurementLabel.position.y = m.position.y;
+          measurementLabel.position.z = m.position.z;
           //measurementLabel.position.copy(intersects[0].point)
           //measurementLabels[lineId] = measurementLabel
           //scene.add(measurementLabel);
