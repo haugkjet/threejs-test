@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import Stats from "three/examples/jsm/libs/stats.module";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
@@ -107,6 +108,10 @@ document.body.appendChild(labelRenderer.domElement);
 // Orbitcontrols
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+
+//const controls = new FirstPersonControls(camera, renderer.domElement);
+//controls.movementSpeed = 50;
+//controls.lookSpeed = 0.9;
 
 const pickableObjects: THREE.Mesh[] = [];
 let intersectedObject: THREE.Object3D | null;
@@ -386,6 +391,7 @@ function animate() {
 function render() {
   labelRenderer.render(scene, camera);
   renderer.render(scene, camera);
+  //controls.update(clock.getDelta());
 }
 
 animate();
