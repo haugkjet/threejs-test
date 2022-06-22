@@ -51,8 +51,9 @@ const camera = new THREE.PerspectiveCamera(
   100000
 );
 
-camera.position.z = 4;
-camera.position.y = 4.5;
+camera.position.z = 5;
+camera.position.y = 0.5;
+camera.position.x = 1.0;
 
 const SKY_COLOR = 0x0e0353;
 const GROUND_COLOR = 0xd5f3ed;
@@ -203,9 +204,9 @@ loader.load(
             measurementLabel.position.x = m.position.x;
             measurementLabel.position.y = m.position.y;
             measurementLabel.position.z = m.position.z;
-            //measurementLabel.position.copy(intersects[0].point)
-            //measurementLabels[lineId] = measurementLabel
-            scene.add(measurementLabel);
+          //measurementLabel.position.copy(intersects[0].point)
+          //measurementLabels[lineId] = measurementLabel
+          //scene.add(measurementLabel);
         }
 
         //console.log(m.id);
@@ -254,7 +255,7 @@ const s1 = new THREE.Mesh(
 );
 s1.position.set(1, 2, -0.5);
 s1.castShadow = true;
-scene.add(s1);
+//scene.add(s1);
 
 const myshadermaterial = new THREE.ShaderMaterial({
   uniforms: {
@@ -275,7 +276,7 @@ const s2 = new THREE.Mesh(
 );
 s2.position.set(-1, 2, -0.5);
 s2.castShadow = true;
-scene.add(s2);
+//scene.add(s2);
 
 // Box with (unfinished) outline shader
 const s3 = new THREE.Mesh(
@@ -288,7 +289,7 @@ const s3 = new THREE.Mesh(
 );
 s3.position.set(3, 2, -0.5);
 s3.castShadow = true;
-scene.add(s3);
+//scene.add(s3);
 
 // Sphere with outline effect (not shader based)
 let sphereGeometry = new THREE.SphereGeometry(0.5, 20, 20);
@@ -297,15 +298,15 @@ let sphere = new THREE.Mesh(
   new THREE.MeshStandardMaterial({ roughness: 0.242, color: 0x6b302c })
 );
 sphere.position.set(-3, 2, 0);
-scene.add(sphere);
+//scene.add(sphere);
 let outlineMaterial1 = new THREE.MeshStandardMaterial({
   color: 0x570861,
   side: THREE.BackSide,
 });
 let outlineMesh1 = new THREE.Mesh(sphereGeometry, outlineMaterial1);
 //outlineMesh1.position = sphere.position;
-outlineMesh1.scale.multiplyScalar(1.04);
-scene.add(outlineMesh1);
+//outlineMesh1.scale.multiplyScalar(1.04);
+//scene.add(outlineMesh1);
 outlineMesh1.position.x = sphere.position.x;
 outlineMesh1.position.y = sphere.position.y;
 outlineMesh1.position.z = sphere.position.z;
