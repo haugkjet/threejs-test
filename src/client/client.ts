@@ -143,12 +143,12 @@ loader.load(
         switch (m.name) {
           case "Plane":
             m.receiveShadow = true;
-            break;
-          case "Sphere":
-            m.castShadow = true;
+            m.userData.ground = true;
             break;
           default:
             m.castShadow = true;
+            m.userData.draggable = true;
+
             pickableObjects.push(m);
             sceneMeshes.push(m);
             //store reference to original materials for later
@@ -273,7 +273,7 @@ outlineMesh1.position.z = sphere.position.z;
 const raycaster = new THREE.Raycaster();
 let intersects: THREE.Intersection[];
 
-//renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
+renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
 renderer.domElement.addEventListener("click", onClick, false);
 renderer.domElement.addEventListener("mousemove", onMouseMove, false);
 renderer.domElement.addEventListener("dblclick", onDoubleClick, false);
@@ -362,6 +362,55 @@ function onDoubleClick(event: MouseEvent) {
   }
 }
 
+const clickMouse = new THREE.Vector2(); // create once
+const moveMouse = new THREE.Vector2(); // create once
+var draggable: THREE.Object3D;
+
+function intersect(pos: THREE.Vector2) {
+  raycaster.setFromCamera(pos, camera);
+  return raycaster.intersectObjects(scene.children);
+}
+
+window.addEventListener("click", (event) => {
+  if (draggable != null) {
+    console.log(`dropping draggable ${draggable.userData.name}`);
+    draggable = null as any;
+    return;
+  }
+
+  // THREE RAYCASTER
+  clickMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  clickMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  const found = intersect(clickMouse);
+  if (found.length > 0) {
+    if (found[0].object.userData.draggable) {
+      draggable = found[0].object;
+      console.log(`found draggable ${draggable.userData.name}`);
+    }
+  }
+});
+
+window.addEventListener("mousemove", (event) => {
+  moveMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  moveMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
+
+function dragObject() {
+  if (draggable != null) {
+    const found = intersect(moveMouse);
+    if (found.length > 0) {
+      for (let i = 0; i < found.length; i++) {
+        if (!found[i].object.userData.ground) continue;
+
+        let target = found[i].point;
+        draggable.position.x = target.x;
+        draggable.position.z = target.z;
+      }
+    }
+  }
+}
+
 window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -378,10 +427,13 @@ document.body.appendChild(stats.dom);
 function animate() {
   requestAnimationFrame(animate);
 
+  dragObject();
+
   const elapsedTime = clock.getElapsedTime();
   myshadermaterial.uniforms.uTime.value = elapsedTime;
 
   controls.update();
+  dragObject();
 
   render();
 
