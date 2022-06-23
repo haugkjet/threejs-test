@@ -6,6 +6,10 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
 import { mapLinear } from "three/src/math/MathUtils";
 
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+
 import {
   CSS2DRenderer,
   CSS2DObject,
@@ -18,7 +22,7 @@ import { VS_outline } from "./shaders/outline/vertex";
 import { FS_outline } from "./shaders/outline/fragment";
 
 import { gltfload } from "./gltfload";
-import { ShaderMaterial } from "three";
+import { ShaderMaterial, Vector2 } from "three";
 
 const params = {
   exposure: 1.0,
@@ -139,6 +143,17 @@ renderer.toneMappingExposure = params.exposure;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+let composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(
+  new UnrealBloomPass(
+    new Vector2(window.innerWidth, window.innerHeight),
+    0.35,
+    1,
+    0.0
+  )
+);
 
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -486,7 +501,8 @@ function animate() {
 
 function render() {
   labelRenderer.render(scene, camera);
-  renderer.render(scene, camera);
+  //renderer.render(scene, camera);
+  composer.render();
   //controls.update(clock.getDelta());
 }
 
