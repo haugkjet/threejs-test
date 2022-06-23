@@ -121,11 +121,11 @@ new EXRLoader().load(
 const size = 80;
 const divisions = 40;
 
-const gridHelper = new THREE.GridHelper(size, divisions, "#3a3b3c", "#3a3b3c");
+/*const gridHelper = new THREE.GridHelper(size, divisions, "#3a3b3c", "#3a3b3c");
 scene.add(gridHelper);
 
 gridHelper.position.y = -1.3;
-gridHelper.position.z = -20;
+gridHelper.position.z = -20;*/
 
 // Setup renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
