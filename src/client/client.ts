@@ -9,6 +9,8 @@ import { mapLinear } from "three/src/math/MathUtils";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass";
+import { GlitchPass } from "three/examples/jsm/postprocessing/GlitchPass.js";
 
 import {
   CSS2DRenderer,
@@ -25,7 +27,7 @@ import { gltfload } from "./gltfload";
 import { ShaderMaterial, Vector2 } from "three";
 
 const params = {
-  exposure: 1.0,
+  exposure: 5.0,
 };
 
 const scene = new THREE.Scene();
@@ -146,14 +148,25 @@ document.body.appendChild(renderer.domElement);
 
 let composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-composer.addPass(
+/*composer.addPass(
   new UnrealBloomPass(
     new Vector2(window.innerWidth, window.innerHeight),
     0.35,
     1,
     0.0
   )
+);*/
+const filmPass = new FilmPass(
+  0.1, // noise intensity
+  1.0, // scanline intensity
+  500, // scanline count
+  0 // grayscale
 );
+filmPass.renderToScreen = true;
+composer.addPass(filmPass);
+
+//const glitchPass = new GlitchPass();
+//composer.addPass(glitchPass);
 
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
