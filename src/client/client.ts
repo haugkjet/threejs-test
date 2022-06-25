@@ -27,7 +27,7 @@ import { gltfload } from "./gltfload";
 import { ShaderMaterial, Vector2 } from "three";
 
 const params = {
-  exposure: 5.0,
+  exposure: 1.5,
 };
 
 const scene = new THREE.Scene();
@@ -514,8 +514,8 @@ function animate() {
 
 function render() {
   labelRenderer.render(scene, camera);
-  //renderer.render(scene, camera);
-  composer.render();
+  renderer.render(scene, camera);
+  //composer.render();
   //controls.update(clock.getDelta());
 }
 
