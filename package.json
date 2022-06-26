@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/haugkjet/threejs-test#readme",
   "devDependencies": {
+    "@types/dat.gui": "^0.7.7",
     "@types/three": "^0.141.0",
     "three": "^0.141.0",
     "ts-loader": "^9.3.0",
@@ -27,5 +28,8 @@
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.2",
     "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "dat.gui": "^0.7.9"
   }
 }

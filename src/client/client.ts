@@ -11,6 +11,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass";
 import { GlitchPass } from "three/examples/jsm/postprocessing/GlitchPass.js";
+import { GUI } from "dat.gui";
 
 import {
   CSS2DRenderer,
@@ -60,6 +61,13 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 5;
 camera.position.y = 0.5;
 camera.position.x = 1.0;
+
+const gui = new GUI();
+const cameraFolder = gui.addFolder("Camera");
+
+cameraFolder.add(camera.position, "x", -10, 10);
+cameraFolder.add(camera.position, "y", 0.5, 10);
+cameraFolder.add(camera.position, "z", -10, 10);
 
 const SKY_COLOR = 0x0e0353;
 const GROUND_COLOR = 0xd5f3ed;
