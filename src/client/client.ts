@@ -58,9 +58,9 @@ const camera = new THREE.PerspectiveCamera(
   100000
 );
 
-camera.position.z = 5;
-camera.position.y = 0.5;
-camera.position.x = 1.0;
+camera.position.z = 30;
+camera.position.y = 20;
+camera.position.x = 0;
 
 const gui = new GUI();
 const cameraFolder = gui.addFolder("Camera");
@@ -288,12 +288,12 @@ scene.add(arrowHelper);
 
 // White ball
 const s1 = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 32, 32),
+  new THREE.SphereGeometry(0.5, 32, 32),
   new THREE.MeshStandardMaterial({ color: 0xffffff })
 );
-s1.position.set(1, 2, -0.5);
+s1.position.set(1, 0, -0.5);
 s1.castShadow = true;
-//scene.add(s1);
+scene.add(s1);
 
 const myshadermaterial = new THREE.ShaderMaterial({
   uniforms: {
@@ -491,6 +491,27 @@ function dragObject() {
   }
 }
 
+// movement - please calibrate these values
+var xSpeed = 1;
+var zSpeed = 1;
+
+document.addEventListener("keydown", onDocumentKeyDown, false);
+function onDocumentKeyDown(event: KeyboardEvent) {
+  const keyCode = event.code;
+  if (keyCode === "ArrowDown") {
+    s1.position.z += zSpeed;
+  }
+  if (keyCode === "ArrowUp") {
+    s1.position.z -= zSpeed;
+  }
+  if (keyCode === "ArrowLeft") {
+    s1.position.x -= xSpeed;
+  }
+  if (keyCode === "ArrowRight") {
+    s1.position.x += xSpeed;
+  }
+}
+
 window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -511,6 +532,8 @@ function animate() {
 
   const elapsedTime = clock.getElapsedTime();
   myshadermaterial.uniforms.uTime.value = elapsedTime;
+
+  //s1.position.x += 0.01;
 
   controls.update();
   dragObject();
