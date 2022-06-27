@@ -184,7 +184,7 @@ labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
 // Orbitcontrols
-const controls = new OrbitControls(camera, renderer.domElement);
+//const controls = new OrbitControls(camera, renderer.domElement);
 //controls.enableDamping = true;
 
 //const controls = new FirstPersonControls(camera, renderer.domElement);
@@ -534,8 +534,9 @@ function animate() {
   myshadermaterial.uniforms.uTime.value = elapsedTime;
 
   //s1.position.x += 0.01;
+  camera.lookAt(s1.position);
 
-  controls.update();
+  //controls.update();
   dragObject();
 
   render();
