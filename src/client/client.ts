@@ -58,9 +58,9 @@ const camera = new THREE.PerspectiveCamera(
   100000
 );
 
-camera.position.z = 30;
-camera.position.y = 20;
-camera.position.x = 0;
+camera.position.z = 10;
+camera.position.y = 2;
+camera.position.x = -2;
 
 const gui = new GUI();
 const cameraFolder = gui.addFolder("Camera");
@@ -184,8 +184,8 @@ labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
 // Orbitcontrols
-//const controls = new OrbitControls(camera, renderer.domElement);
-//controls.enableDamping = true;
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
 
 //const controls = new FirstPersonControls(camera, renderer.domElement);
 //controls.movementSpeed = 50;
