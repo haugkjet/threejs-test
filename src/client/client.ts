@@ -156,22 +156,22 @@ document.body.appendChild(renderer.domElement);
 
 let composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-/*composer.addPass(
+composer.addPass(
   new UnrealBloomPass(
     new Vector2(window.innerWidth, window.innerHeight),
-    0.35,
-    1,
-    0.0
+    0.2,
+    0.9,
+    0.1
   )
-);*/
-const filmPass = new FilmPass(
+);
+/*const filmPass = new FilmPass(
   0.1, // noise intensity
   1.0, // scanline intensity
   500, // scanline count
   0 // grayscale
 );
 filmPass.renderToScreen = true;
-composer.addPass(filmPass);
+composer.addPass(filmPass);*/
 
 //const glitchPass = new GlitchPass();
 //composer.addPass(glitchPass);
