@@ -25,14 +25,14 @@ import { VS_outline } from "./shaders/outline/vertex";
 import { FS_outline } from "./shaders/outline/fragment";
 
 import { gltfload } from "./gltfload";
-import { ShaderMaterial, Vector2 } from "three";
+import { ShaderMaterial, Vector2, Vector3 } from "three";
 
 const params = {
   exposure: 1.5,
 };
 
 const scene = new THREE.Scene();
-scene.add(new THREE.AxesHelper(5));
+//scene.add(new THREE.AxesHelper(5));
 
 //Light theme
 //scene.background = new THREE.Color(0xb5e2ff);
@@ -58,9 +58,9 @@ const camera = new THREE.PerspectiveCamera(
   100000
 );
 
-camera.position.z = 10;
+camera.position.z = 19;
 camera.position.y = 2;
-camera.position.x = -2;
+camera.position.x = -30;
 
 const gui = new GUI();
 const cameraFolder = gui.addFolder("Camera");
@@ -525,6 +525,7 @@ var clock = new THREE.Clock();
 const stats = Stats();
 document.body.appendChild(stats.dom);
 
+let lookposition = new Vector3(-20, 2, -10);
 function animate() {
   requestAnimationFrame(animate);
 
@@ -533,8 +534,15 @@ function animate() {
   const elapsedTime = clock.getElapsedTime();
   myshadermaterial.uniforms.uTime.value = elapsedTime;
 
+  if (camera.position.z >= 0.0) {
+    camera.position.z -= 0.005;
+  } else camera.position.z = 19.0;
+  //camera.position.y += 0.01;
+  //camera.position.x += 0.01;
+
   //s1.position.x += 0.01;
-  camera.lookAt(s1.position);
+
+  camera.lookAt(lookposition);
 
   //controls.update();
   dragObject();
